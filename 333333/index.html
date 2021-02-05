@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Beating a Standard Die</title>
+    <title>Beating a 333333 Die</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -170,7 +170,7 @@
         <div class="cell die d2 face-4"></div>
         <div class="cell die d2 face-5"></div>
         <!-- second row -->
-        <div class="cell die d1">1</div>
+        <div class="cell die d1">3</div>
         <div class="cell"></div>
         <div class="cell"></div>
         <div class="cell"></div>
@@ -178,7 +178,7 @@
         <div class="cell"></div>
         <div class="cell"></div>
         <!-- third row -->
-        <div class="cell die d1">2</div>
+        <div class="cell die d1">3</div>
         <div class="cell"></div>
         <div class="cell"></div>
         <div class="cell"></div>
@@ -194,7 +194,7 @@
         <div class="cell"></div>
         <div class="cell"></div>
         <!-- fifth row -->
-        <div class="cell die d1">4</div>
+        <div class="cell die d1">3</div>
         <div class="cell"></div>
         <div class="cell"></div>
         <div class="cell"></div>
@@ -202,7 +202,7 @@
         <div class="cell"></div>
         <div class="cell"></div>
         <!-- six row -->
-        <div class="cell die d1">5</div>
+        <div class="cell die d1">3</div>
         <div class="cell"></div>
         <div class="cell"></div>
         <div class="cell"></div>
@@ -210,7 +210,7 @@
         <div class="cell"></div>
         <div class="cell"></div>
         <!-- seventh row -->
-        <div class="cell die d1">6</div>
+        <div class="cell die d1">3</div>
         <div class="cell"></div>
         <div class="cell"></div>
         <div class="cell"></div>
@@ -234,7 +234,7 @@
     <script>
         let start = true; // just for initializing
 
-        let d1 = [1, 2, 3, 4, 5, 6]; // the given die
+        let d1 = [3, 3, 3, 3, 3, 3]; // the given die
         let dieInput = document.getElementById('die-input');
         let testBtn = document.getElementById('test-btn');
         let cells = document.querySelectorAll('.cell:not(.die)');
@@ -248,8 +248,9 @@
             let d2 = Array.from(dieInput.value).map(val => parseInt(val));
 
             if (start) {
-                d2 = [1, 2, 3, 4, 5, 6];
+                d2 = [3, 3, 3, 3, 3, 3];
             }
+
             if (d2.reduce((a, b) => a + b) > 21) {
                 result.innerHTML = "<div class='error'>Pips must add to 21 - update your die and try again</div>";
             } else {
@@ -315,6 +316,7 @@
                     // show history if it's not already visible
                     history.classList.remove('hidden');
                 }
+
                 start = false;
             }
 
