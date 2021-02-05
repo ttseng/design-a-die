@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Beating a Standard Die</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            width: 400px;
+            font-family: sans-serif;
+            padding: 10px;
+        }
+        input {
+            width: calc(100% - 20px);
+            height: 40px;
+            border-radius: 5px;
+            padding: 0 10px;
+            font-size: large;
+        }
+        button {
+            display: block;
+            width: 100%;
+            font-size: large;
+            margin: 10px 0;
+            height: 40px;
+            border: none;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .result {
+            text-align: center;
+            height: 30px;
+            margin: 10px auto;
+            width: fit-content;
+        }
+
+        .result .error {
+            padding: 4px 8px;
+            background: lightpink;
+            border-radius: 5px;
+        }
+
+        .result .probability {
+            padding: 4px 8px;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+        }
+
+        form {
+            margin: 10px 0;
+        }
+
+        .table {
+            width: fit-content;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(7, 40px);
+            grid-template-rows: repeat(7, 40px);
+            grid-column-gap: 0px;
+            grid-row-gap: 0px;
+            font-size: 30px;
+        }
+
+        .cell {
+            border: 1px solid black;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            transition: all 1s;
+            background: white;
+        }
+
+        .cell:first-of-type {
+            border-left: none;
+            border-top: none;
+        }
+
+        .cell.d1 {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .cell.d2 {
+            color: blue;
+            font-weight: bold;
+        }
+
+        span.draw, .cell.draw {
+            background:darkgrey;
+        }
+
+        span.loss, .cell.loss {
+            background: orange;
+        }
+
+        span.win, .cell.win {
+            background: blue;
+        }
+
+        .history {
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 10px;
+        }
+
+        .history .header{
+            font-weight: bold;
+            border-bottom: 3px solid darkgrey;
+        }
+
+        .history div.item{
+            border-bottom: 1px solid lightgrey;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .history .probability {
+            padding: 4px 8px;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .history div {
+            margin: 5px 0;
+            line-height: 25px;
+        }
+
+        .history.probability
+
+        .probability.win {
+            background: blue;
+        }
+
+        .probability.lose {
+            background: orange;
+        }
+
+        .probability.draw {
+            background: #b5b5b5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <form>
+        <input type="text" id="die-input" value="" placeholder="Enter Your Design">
+        <button id="test-btn">Test Your Design</button>
+    </form>
+
+    <div class="result"></div>
+
+    <div class="table">
+        <!-- first row -->
+        <div class="cell die"></div>
+        <div class="cell die d2 face-0"></div>
+        <div class="cell die d2 face-1"></div>
+        <div class="cell die d2 face-2"></div>
+        <div class="cell die d2 face-3"></div>
+        <div class="cell die d2 face-4"></div>
+        <div class="cell die d2 face-5"></div>
+        <!-- second row -->
+        <div class="cell die d1">1</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <!-- third row -->
+        <div class="cell die d1">2</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <!-- fourth row -->
+        <div class="cell die d1">3</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <!-- fifth row -->
+        <div class="cell die d1">4</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <!-- six row -->
+        <div class="cell die d1">5</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <!-- seventh row -->
+        <div class="cell die d1">6</div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+    </div>
+
+    <div class="history hidden">
+        <div class="win type">
+            <div class="header">👍 Wins</div>
+        </div>
+        <div class="draw type">
+            <div class="header">➖ Draws</div>
+        </div>
+        <div class="lose type">
+            <div class="header">👎 Losses</div>
+        </div>
+    </div>
+
+    <script>
+        let start = true; // just for initializing
+
+        let d1 = [1, 2, 3, 4, 5, 6]; // the given die
+        let dieInput = document.getElementById('die-input');
+        let testBtn = document.getElementById('test-btn');
+        let cells = document.querySelectorAll('.cell:not(.die)');
+        let history = document.querySelector('.history');
+        let result = document.querySelector('.result');
+
+        testBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // check if it's a valid input
+            let d2 = Array.from(dieInput.value).map(val => parseInt(val));
+
+            if(start){
+                d2 = [1,2,3,4,5,6];
+                start = false;
+            }
+            if (d2.reduce((a, b) => a + b) > 21) {
+                result.innerHTML = "<div class='error'>Pips must add to 21 - update your die and try again</div>";
+            } else {
+                for (z = 0; z < cells.length; z++) {
+                    cells[z].classList = 'cell'; // set back to default
+                }
+                // populate the cell values for custom die
+                for (z = 0; z < d2.length; z++) {
+                    document.querySelector(`.face-${z}`).innerHTML = d2[z];
+                }
+                // construct the probability matrix
+                // x = row, y = column
+                let i = 0; // i = cell index
+                for (x = 0; x < d2.length; x++) {
+                    for (y = 0; y < d2.length; y++) {
+                        let d1_val = d1[x];
+                        let d2_val = d2[y];
+                        if (d1_val > d2_val) {
+                            cells[i].classList.add('loss');
+                        } else if (d1_val == d2_val) {
+                            cells[i].classList.add('draw');
+                        } else {
+                            cells[i].classList.add('win');
+                        }
+                        i++;
+                    }
+                }
+
+                // calculate probability of winning
+                let winCount = document.querySelectorAll('.cell.win').length;
+                let lossCount = document.querySelectorAll('.cell.loss').length;
+
+                let probability = ((winCount / (winCount + lossCount)) * 100).toFixed(1);
+
+                let decoration;
+                let outcome; // 0 = lose, 1= win, 2 = draw
+                if (probability > 50) {
+                    // win
+                    decoration = "👍";
+                    outcome = 'win';
+                } else if (probability == 50) {
+                    // draw
+                    decoration = "➖";
+                    outcome = 'draw';
+                } else {
+                    // lost
+                    decoration = "👎";
+                    outcome = 'lose';
+                }
+                let contents = `<span class="probability ${outcome}">${decoration} ${probability}%</span>  for die <b>${d2.join('')}</b>`;
+                result.innerHTML = contents;
+
+                // add to the history
+                let container = document.querySelector(`.history .${outcome}`);
+                console.log(container);
+                let historyItem = document.createElement('div');
+                historyItem.classList += 'item';
+                let historyContents = `<span class="probability ${outcome}">${probability}%</span> for <b>${d2.join('')}</b>`;
+                historyItem.innerHTML = historyContents;
+                container.append(historyItem);                
+
+            // show history if it's not already visible
+            history.classList.remove('hidden');
+            }
+
+        });
+
+        document.addEventListener("DOMContentLoaded", function(event) { 
+            testBtn.click(); // try out the default value first
+        });
+
+    </script>
+
+</body>
+
+</html>
