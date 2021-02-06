@@ -250,73 +250,69 @@
             if (start) {
                 d2 = [1, 2, 3, 4, 5, 6];
             }
-            if (d2.reduce((a, b) => a + b) > 21) {
-                result.innerHTML = "<div class='error'>Pips must add to 21 - update your die and try again</div>";
-            } else {
-                for (z = 0; z < cells.length; z++) {
-                    cells[z].classList = 'cell'; // set back to default
-                }
-                // populate the cell values for custom die
-                for (z = 0; z < d2.length; z++) {
-                    document.querySelector(`.face-${z}`).innerHTML = d2[z];
-                }
-                // construct the probability matrix
-                // x = row, y = column
-                let i = 0; // i = cell index
-                for (x = 0; x < d2.length; x++) {
-                    for (y = 0; y < d2.length; y++) {
-                        let d1_val = d1[x];
-                        let d2_val = d2[y];
-                        if (d1_val > d2_val) {
-                            cells[i].classList.add('loss');
-                        } else if (d1_val == d2_val) {
-                            cells[i].classList.add('draw');
-                        } else {
-                            cells[i].classList.add('win');
-                        }
-                        i++;
-                    }
-                }
-
-                if (!start) {
-                    // calculate probability of winning
-                    let winCount = document.querySelectorAll('.cell.win').length;
-                    let lossCount = document.querySelectorAll('.cell.loss').length;
-
-                    let probability = ((winCount / (winCount + lossCount)) * 100).toFixed(1);
-
-                    let decoration;
-                    let outcome; // 0 = lose, 1= win, 2 = draw
-                    if (probability > 50) {
-                        // win
-                        decoration = "👍";
-                        outcome = 'win';
-                    } else if (probability == 50) {
-                        // draw
-                        decoration = "➖";
-                        outcome = 'draw';
-                    } else {
-                        // lost
-                        decoration = "👎";
-                        outcome = 'lose';
-                    }
-                    let contents = `<span class="probability ${outcome}">${decoration} ${probability}%</span>  for die <b>${d2.join('')}</b>`;
-                    result.innerHTML = contents;
-
-                    // add to the history
-                    let container = document.querySelector(`.history .${outcome}`);
-                    console.log(container);
-                    let historyItem = document.createElement('div');
-                    historyItem.classList += 'item';
-                    let historyContents = `<span class="probability ${outcome}">${probability}%</span> for <b>${d2.join('')}</b>`;
-                    historyItem.innerHTML = historyContents;
-                    container.append(historyItem);
-
-                    // show history if it's not already visible
-                    history.classList.remove('hidden');
-                }
-                start = false;
+            for (z = 0; z < cells.length; z++) {
+                cells[z].classList = 'cell'; // set back to default
             }
+            // populate the cell values for custom die
+            for (z = 0; z < d2.length; z++) {
+                document.querySelector(`.face-${z}`).innerHTML = d2[z];
+            }
+            // construct the probability matrix
+            // x = row, y = column
+            let i = 0; // i = cell index
+            for (x = 0; x < d2.length; x++) {
+                for (y = 0; y < d2.length; y++) {
+                    let d1_val = d1[x];
+                    let d2_val = d2[y];
+                    if (d1_val > d2_val) {
+                        cells[i].classList.add('loss');
+                    } else if (d1_val == d2_val) {
+                        cells[i].classList.add('draw');
+                    } else {
+                        cells[i].classList.add('win');
+                    }
+                    i++;
+                }
+            }
+
+            if (!start) {
+                // calculate probability of winning
+                let winCount = document.querySelectorAll('.cell.win').length;
+                let lossCount = document.querySelectorAll('.cell.loss').length;
+
+                let probability = ((winCount / (winCount + lossCount)) * 100).toFixed(1);
+
+                let decoration;
+                let outcome; // 0 = lose, 1= win, 2 = draw
+                if (probability > 50) {
+                    // win
+                    decoration = "👍";
+                    outcome = 'win';
+                } else if (probability == 50) {
+                    // draw
+                    decoration = "➖";
+                    outcome = 'draw';
+                } else {
+                    // lost
+                    decoration = "👎";
+                    outcome = 'lose';
+                }
+                let contents = `<span class="probability ${outcome}">${decoration} ${probability}%</span>  for die <b>${d2.join('')}</b>`;
+                result.innerHTML = contents;
+
+                // add to the history
+                let container = document.querySelector(`.history .${outcome}`);
+                console.log(container);
+                let historyItem = document.createElement('div');
+                historyItem.classList += 'item';
+                let historyContents = `<span class="probability ${outcome}">${probability}%</span> for <b>${d2.join('')}</b>`;
+                historyItem.innerHTML = historyContents;
+                container.append(historyItem);
+
+                // show history if it's not already visible
+                history.classList.remove('hidden');
+            }
+            start = false;
 
         });
 
